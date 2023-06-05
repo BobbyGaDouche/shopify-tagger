@@ -16,9 +16,10 @@ if (!shopifyApiKey || !shopifyApiSecret) {
 
 const shopify = new Shopify({
   shopName: 'brewedonline',
-  apiKey: shopifyApiKey,
-  password: shopifyApiSecret,
+  apiKey: process.env.SHOPIFY_API_KEY,
+  password: process.env.SHOPIFY_API_SECRET,
 });
+
 
 app.get('/tag-customer/:id', async (req, res) => {
   try {

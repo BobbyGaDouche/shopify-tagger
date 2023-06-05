@@ -21,25 +21,39 @@ const shopify = new Shopify({
 });
 
 
-app.get('/tag-customer/:id', async (req, res) => {
+app.put('/admin/api/2023-01/customers/:id.json', async (req, res) => {
   try {
     const customerId = req.params.id;
     const customer = await shopify.customer.get(customerId);
 
-    customer.tags += ', new-tag'; // Append new tag
+    // Update the customer's metafield
+    const metafield = {
+      key: 'new',
+      value: 'newvalue',
+      type: 'single_line_text_field',
+      namespace: 'global'
+    };
+
+    // Check if the metafield already exists for the customer
+    const existingMetafield = customer.metafields.find(mf => mf.key === metafield.key);
+    if (existingMetafield) {
+      existingMetafield.value = metafield.value; // Update the existing metafield value
+    } else {
+      customer.metafields.push(metafield); // Add the new metafield
+    }
 
     await shopify.customer.update(customerId, customer);
 
-    res.status(200).send('Successfully tagged customer');
+    res.status(200).send('Successfully updated customer metafield');
   } catch (error) {
-    console.error("Error:", error);
-    console.error("Error message:", error.message);
-    console.error("Error code:", error.code);
-    console.error("Error status:", error.status);
-    console.error("Error headers:", error.headers);
-    console.error("Error response body:", error.body);
+    console.error('Error:', error);
+    console.error('Error message:', error.message);
+    console.error('Error code:', error.code);
+    console.error('Error status:', error.status);
+    console.error('Error headers:', error.headers);
+    console.error('Error response body:', error.body);
 
-    res.status(500).send('An error occurred while tagging the customer');
+    res.status(500).send('An error occurred while updating the customer metafield');
   }
 });
 

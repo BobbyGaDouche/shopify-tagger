@@ -16,22 +16,30 @@ if (!shopifyApiKey || !shopifyApiSecret) {
 
 const shopify = new Shopify({
   shopName: 'brewedonline',
-  apiKey: shopifyApiKey,
-  password: shopifyApiSecret,
+  apiKey: process.env.SHOPIFY_API_KEY,
+  password: process.env.SHOPIFY_API_SECRET,
 });
 
-// Update a customer
 app.put('/update-customer/:id', async (req, res) => {
   try {
     const customerId = req.params.id;
-    const updatedCustomerData = req.body; // Contains the updated customer information
 
-    // Perform the necessary operations to update the customer using the Shopify API
-    const updatedCustomer = await shopify.customer.update(customerId, updatedCustomerData);
+    const updatedCustomer = {
+      metafields: [
+        {
+          key: 'new',
+          value: 'newvalue',
+          type: 'single_line_text_field',
+          namespace: 'global',
+        },
+      ],
+    };
 
-    res.status(200).json(updatedCustomer);
+    await shopify.customer.update(customerId, updatedCustomer);
+
+    res.status(200).send('Customer updated successfully');
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error);
     res.status(500).send('An error occurred while updating the customer');
   }
 });

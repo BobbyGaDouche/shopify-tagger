@@ -9,6 +9,10 @@ const shopify = new Shopify({
   password: process.env.SHOPIFY_API_SECRET,
 });
 
+// Log the values of the API keys
+console.log('API Key:', process.env.SHOPIFY_API_KEY);
+console.log('API Secret:', process.env.SHOPIFY_API_SECRET);
+
 app.get('/tag-customer/:id', async (req, res) => {
   try {
     const customerId = req.params.id;

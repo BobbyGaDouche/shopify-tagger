@@ -20,27 +20,26 @@ const shopify = new Shopify({
   password: process.env.SHOPIFY_API_SECRET,
 });
 
-app.put('/update-customer/:id', async (req, res) => {
+app.put('/admin/api/2023-01/customers/:id.json', async (req, res) => {
   try {
     const customerId = req.params.id;
 
-    const updatedCustomer = {
-      metafields: [
-        {
-          key: 'new',
-          value: 'newvalue',
-          type: 'single_line_text_field',
-          namespace: 'global',
-        },
-      ],
+    const metafield = {
+      key: 'test',
+      value: 'text',
+      type: 'single_line_text_field',
+      namespace: 'global',
     };
 
-    await shopify.customer.update(customerId, updatedCustomer);
+    const customer = await shopify.customer.get(customerId);
+    customer.metafields.push(metafield);
 
-    res.status(200).send('Customer updated successfully');
+    await shopify.customer.update(customerId, customer);
+
+    res.status(200).send('Customer metafield added successfully');
   } catch (error) {
     console.error('Error:', error);
-    res.status(500).send('An error occurred while updating the customer');
+    res.status(500).send('An error occurred while adding the customer metafield');
   }
 });
 

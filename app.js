@@ -1,19 +1,13 @@
 const express = require('express');
-
 const app = express();
-
 const port = process.env.PORT || 3000;
 
-app.listen(port, () => console.log(`Server is running on port ${port}...`));
-
 const Shopify = require('shopify-api-node');
-
 const shopify = new Shopify({
   shopName: 'brewedonline',
   apiKey: process.env.SHOPIFY_API_KEY,
   password: process.env.SHOPIFY_API_SECRET,
 });
-
 
 app.get('/tag-customer/:id', async (req, res) => {
   try {
@@ -36,3 +30,5 @@ app.get('/tag-customer/:id', async (req, res) => {
     res.status(500).send('An error occurred while tagging the customer');
   }
 });
+
+app.listen(port, () => console.log(`Server is running on port ${port}...`));

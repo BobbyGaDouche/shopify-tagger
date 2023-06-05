@@ -23,6 +23,7 @@ const shopify = new Shopify({
 app.put('/admin/api/2023-01/customers/:id.json', async (req, res) => {
   try {
     const customerId = req.params.id;
+    console.log('Customer ID:', customerId);
 
     const metafield = {
       key: 'test',
@@ -31,10 +32,15 @@ app.put('/admin/api/2023-01/customers/:id.json', async (req, res) => {
       namespace: 'global',
     };
 
+    console.log('Fetching customer...');
     const customer = await shopify.customer.get(customerId);
+    console.log('Fetched customer:', customer);
+
     customer.metafields.push(metafield);
 
+    console.log('Updating customer...');
     await shopify.customer.update(customerId, customer);
+    console.log('Customer updated successfully');
 
     res.status(200).send('Customer metafield added successfully');
   } catch (error) {

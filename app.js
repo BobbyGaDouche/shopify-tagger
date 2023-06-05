@@ -27,6 +27,6 @@ app.get('/tag-customer/:id', async (req, res) => {
     res.status(200).send('Successfully tagged customer');
   } catch (error) {
     console.error(error);
-    res.status(500).send('An error occurred while tagging the customer');
+    res.status(500).send(`An error occurred while tagging the customer: ${error.message}`);
   }
 });

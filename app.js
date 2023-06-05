@@ -10,8 +10,8 @@ const Shopify = require('shopify-api-node');
 
 const shopify = new Shopify({
   shopName: 'brewedonline',
-  apiKey: 'f407beb8cca59260ce936842917934cd',
-  password: 'c537296e3cc78220350920f12d7c23d7',
+  apiKey: '0499a30b477eac543051827e2f381bf0',
+  password: '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',
 });
 
 

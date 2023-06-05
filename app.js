@@ -1,52 +1,40 @@
 const express = require('express');
-const app = express();
-const port = process.env.PORT || 5000;
-
 const Shopify = require('shopify-api-node');
-const shopifyApiKey = process.env.SHOPIFY_API_KEY;
-const shopifyApiSecret = process.env.SHOPIFY_API_SECRET;
 
-console.log('Shopify API Key:', shopifyApiKey);
-console.log('Shopify API Secret:', shopifyApiSecret);
+const app = express();
+const port = process.env.PORT || 3000;
 
-if (!shopifyApiKey || !shopifyApiSecret) {
-  console.error('Missing Shopify API Key or API Secret');
-  process.exit(1);
-}
-
+// Set up Shopify API
 const shopify = new Shopify({
   shopName: 'brewedonline',
   apiKey: process.env.SHOPIFY_API_KEY,
   password: process.env.SHOPIFY_API_SECRET,
 });
 
-app.put('/admin/api/2023-01/customers/:id.json', async (req, res) => {
+app.get('/tag-customer/:id', async (req, res) => {
   try {
     const customerId = req.params.id;
-    console.log('Customer ID:', customerId);
-
-    const metafield = {
-      key: 'test',
-      value: 'text',
-      type: 'single_line_text_field',
-      namespace: 'global',
-    };
-
-    console.log('Fetching customer...');
     const customer = await shopify.customer.get(customerId);
-    console.log('Fetched customer:', customer);
 
-    customer.metafields.push(metafield);
+    if (typeof customer.tags === 'string' && !customer.tags.includes('new-tag')) {
+      customer.tags += ', new-tag';
+    }
 
-    console.log('Updating customer...');
-    await shopify.customer.update(customerId, customer);
-    console.log('Customer updated successfully');
+    await shopify.customer.update(customerId, { tags: customer.tags });
 
-    res.status(200).send('Customer metafield added successfully');
+    res.status(200).send('Successfully tagged customer');
   } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('An error occurred while adding the customer metafield');
+    console.error("Error:", error);
+    console.error("Error message:", error.message);
+    console.error("Error code:", error.code);
+    console.error("Error status:", error.status);
+    console.error("Error headers:", error.headers);
+    console.error("Error response body:", error.body);
+
+    res.status(500).send('An error occurred while tagging the customer');
   }
 });
 
-app.listen(port, () => console.log(`Server is running on port ${port}...`));
+app.listen(port, () => {
+  console.log(`App is running at http://localhost:${port}`);
+});
